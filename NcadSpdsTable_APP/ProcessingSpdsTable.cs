@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 using System.Linq;
 
 using Multicad;
-using Multicad.AplicationServices;
 using Multicad.DatabaseServices;
-using Multicad.DatabaseServices.StandardObjects;
-using Multicad.Geometry;
-using Multicad.Runtime;
-using Multicad.Symbols;
 using Multicad.Symbols.Tables;
 
 namespace NcadSpdsTable_APP
@@ -38,7 +32,7 @@ namespace NcadSpdsTable_APP
             {
                 McObject tmpOutObjForRows = McObjectManager.GetObject(tables[i]);
                 McTable OutObjForRows = tmpOutObjForRows as McTable; 
-                SummAllRows = SummAllRows + OutObjForRows.Rows.Count;
+                SummAllRows += OutObjForRows.Rows.Count;
             }
 
             //создание таблицы по сумме всех строк 
@@ -92,20 +86,12 @@ namespace NcadSpdsTable_APP
 
             McUndoPoint undo = new McUndoPoint();
             undo.Start();
+            int columnsStartCount = 0;
             foreach (McTable tbl in tables)
             {
                 tbl.Rows.DeleteRange(0, cntTrimRowsInTitle);
-
-                //for (int i = 0; i < tbl.Columns.Count; i++)
-                //{
-                //    bigTbl.Columns[i].Cells. = tbl.Columns
-                //}
-                //foreach (var item in tbl.Columns)
-                //{
-                //    bigTbl.Columns[i].Cells = 
-                //    bigTbl.
-                //}
-                bigTbl.InsertSubtable(tbl, maxRows, tbl.Columns.Count, InsertionModeEnum.CellByCell);
+                columnsStartCount = columnsStartCount + tbl.Columns.Count;
+                bigTbl.InsertSubtable(tbl, 0, columnsStartCount - tbl.Columns.Count, InsertionModeEnum.CellByCell);
             }
             undo.Undo();
             bigTbl.PlaceObject(McEntity.PlaceFlags.Silent);
